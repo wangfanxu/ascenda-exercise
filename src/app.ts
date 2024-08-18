@@ -1,11 +1,13 @@
 // src/app.ts
 import express from "express";
 import hotelRoutes from "./routes/hotelRoutes";
+import { errorHandler } from "./middlewares/errorHandler";
 
 const app = express();
 
 app.use(express.json());
 app.use("/api", hotelRoutes);
+app.use(errorHandler);
 
 const PORT = process.env.PORT || 3001;
 
