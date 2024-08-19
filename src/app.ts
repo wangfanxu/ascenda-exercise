@@ -1,6 +1,7 @@
 import express from "express";
 import hotelRoutes from "./routes/hotelRoutes";
 import { errorHandler } from "./middlewares/errorHandler";
+import redis from "redis";
 
 const app = express();
 
