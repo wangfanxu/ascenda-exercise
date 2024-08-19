@@ -3,7 +3,7 @@ import { mergeHotelData } from "../utils/dataMerger";
 import { Hotel } from "../interfaces/hotelInterfaces";
 import { CustomError } from "../utils/CustomError";
 
-const SUPPLIER_URLS = [
+export const SUPPLIER_URLS = [
   "https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/acme",
   "https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/patagonia",
   "https://5f2be0b4ffc88500167b85a0.mockapi.io/suppliers/paperflies",
@@ -50,10 +50,13 @@ export const getMergedDataById = async (id: string): Promise<Hotel | null> => {
   const responses = await Promise.allSettled(
     SUPPLIER_URLS.map((url) => axios.get(url))
   );
-
   const successfulResponses = responses
     .filter((result) => result.status === "fulfilled")
     .map((result: any) => result.value.data);
+  //if all the data sources throwing error, throw custom error here
+  if (successfulResponses.length === 0) {
+    throw new CustomError("All suppliers failed to provide data", 503);
+  }
 
   const mergedData = mergeHotelData(successfulResponses);
 
