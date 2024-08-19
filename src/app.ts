@@ -1,4 +1,3 @@
-// src/app.ts
 import express from "express";
 import hotelRoutes from "./routes/hotelRoutes";
 import { errorHandler } from "./middlewares/errorHandler";

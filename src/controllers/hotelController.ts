@@ -1,6 +1,8 @@
-// src/controllers/hotelController.ts
 import { Request, Response } from "express";
-import { getMergedHotelData } from "../services/hotelService";
+import {
+  getMergedDataById,
+  getMergedHotelData,
+} from "../services/hotelService";
 
 export const getHotels = async (req: Request, res: Response): Promise<void> => {
   try {
@@ -18,6 +20,27 @@ export const getHotels = async (req: Request, res: Response): Promise<void> => {
     const hotels = await getMergedHotelData(Number(destinationId), ids);
     res.json(hotels);
   } catch (error) {
+    console.log(error);
     res.status(500).json({ message: "Error retrieving hotels", error });
+  }
+};
+
+export const getHotelById = async (
+  req: Request,
+  res: Response
+): Promise<void> => {
+  try {
+    const { id } = req.params;
+
+    const hotel = await getMergedDataById(id);
+
+    if (!hotel) {
+      res.status(404).json({ message: "Hotel not found" });
+      return;
+    }
+
+    res.json(hotel);
+  } catch (error) {
+    res.status(500).json({ message: "Error retrieving hotel", error });
   }
 };

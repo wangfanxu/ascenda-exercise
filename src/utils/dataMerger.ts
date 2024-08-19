@@ -1,4 +1,3 @@
-// src/utils/dataMerger.ts
 import { Hotel } from "../interfaces/hotelInterfaces";
 
 export function mergeHotelData(sources: any[]): Hotel[] {
@@ -52,17 +51,25 @@ export function mergeHotelData(sources: any[]): Hotel[] {
           existingHotel.description = hotel.description;
         }
 
-        // Merge amenities, ensuring no duplicates
         existingHotel.amenities.general = Array.from(
           new Set([
-            ...existingHotel.amenities.general,
-            ...(hotel.amenities?.general || hotel.Facilities || []),
+            ...existingHotel.amenities.general.map(normalizeAmenity),
+            ...(Array.isArray(hotel.amenities)
+              ? hotel.amenities.map(normalizeAmenity)
+              : Array.isArray(hotel.amenities?.general)
+              ? hotel.amenities.general.map(normalizeAmenity)
+              : Array.isArray(hotel.Facilities)
+              ? hotel.Facilities.map(normalizeAmenity)
+              : []),
           ])
         );
+
         existingHotel.amenities.room = Array.from(
           new Set([
-            ...existingHotel.amenities.room,
-            ...(hotel.amenities?.room || []),
+            ...existingHotel.amenities.room.map(normalizeAmenity),
+            ...(Array.isArray(hotel.amenities?.room)
+              ? hotel.amenities.room.map(normalizeAmenity)
+              : []),
           ])
         );
 
@@ -132,4 +139,12 @@ function mergeImageArrays(
       )
   );
   return uniqueImages;
+}
+
+function normalizeAmenity(amenity: string): string {
+  return amenity
+    .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space between camelCase words
+    .toLowerCase() // Convert to lowercase
+    .trim() // Remove any leading or trailing spaces
+    .replace(/[\s-]+/g, "-"); // Replace multiple spaces or hyphens with a single space
 }

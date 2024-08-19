@@ -1,4 +1,3 @@
-// src/services/hotelService.ts
 import axios from "axios";
 import { mergeHotelData } from "../utils/dataMerger";
 import { Hotel } from "../interfaces/hotelInterfaces";
@@ -45,3 +44,20 @@ export async function getMergedHotelData(
 
   return filteredData;
 }
+
+export const getMergedDataById = async (id: string): Promise<Hotel | null> => {
+  // Fetch data from external APIs
+  const responses = await Promise.allSettled(
+    SUPPLIER_URLS.map((url) => axios.get(url))
+  );
+
+  const successfulResponses = responses
+    .filter((result) => result.status === "fulfilled")
+    .map((result: any) => result.value.data);
+
+  const mergedData = mergeHotelData(successfulResponses);
+
+  const hotel = mergedData.find((h) => h.id === id) || null;
+
+  return hotel;
+};

@@ -1,4 +1,3 @@
-// src/interfaces/hotelInterfaces.ts
 export interface Hotel {
   id: string;
   destinationId: number;
