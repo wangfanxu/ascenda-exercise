@@ -11,7 +11,7 @@ export const errorHandler = (
   console.error("Error:", err.message);
 
   const statusCode = err.statusCode || 500;
-  const response = {
+  const response: ErrorResponse = {
     status: "error",
     message: err.message,
   };
