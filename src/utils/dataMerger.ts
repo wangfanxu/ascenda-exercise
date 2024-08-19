@@ -108,11 +108,22 @@ export function mergeHotelData(sources: any[]): Hotel[] {
           ])
         );
 
-        // Update missing location fields
-        if (!existingHotel.location.lat) {
+        // Update missing location fields or take more precise values
+        if (
+          !existingHotel.location.lat ||
+          (trimmedHotel.location.lat &&
+            getPrecision(trimmedHotel.location.lat) >
+              getPrecision(existingHotel.location.lat))
+        ) {
           existingHotel.location.lat = trimmedHotel.location.lat;
         }
-        if (!existingHotel.location.lng) {
+
+        if (
+          !existingHotel.location.lng ||
+          (trimmedHotel.location.lng &&
+            getPrecision(trimmedHotel.location.lng) >
+              getPrecision(existingHotel.location.lng))
+        ) {
           existingHotel.location.lng = trimmedHotel.location.lng;
         }
         if (
@@ -191,4 +202,11 @@ function mergeAmenities(arr1: string[], arr2: string[]): string[] {
   });
 
   return Array.from(normalizedMap.values());
+}
+
+function getPrecision(value: number | null): number {
+  if (value === null || value === undefined) return 0;
+  const decimalPart = value.toString().split(".")[1];
+
+  return decimalPart ? decimalPart.length : 0;
 }
