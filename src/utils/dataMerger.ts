@@ -7,117 +7,121 @@ export function mergeHotelData(sources: any[]): Hotel[] {
     source.forEach((hotel: any) => {
       const hotelId = hotel.id || hotel.Id || hotel.hotel_id;
 
+      const trimmedHotel = {
+        id: hotelId,
+        destinationId:
+          hotel.destination_id || hotel.DestinationId || hotel.destination,
+        name:
+          hotel.name?.trim() || hotel.Name?.trim() || hotel.hotel_name?.trim(),
+        location: {
+          lat: hotel.lat || hotel.Latitude || hotel.location?.lat || null,
+          lng: hotel.lng || hotel.Longitude || hotel.location?.lng || null,
+          address:
+            hotel.address?.trim() ||
+            hotel.Address?.trim() ||
+            hotel.location?.address?.trim() ||
+            null,
+          city: hotel.City?.trim() || hotel.location?.city?.trim() || null,
+          country:
+            hotel.Country?.trim() || hotel.location?.country?.trim() || null,
+          postalCode: hotel.PostalCode?.trim() || null,
+        },
+        description:
+          hotel.description?.trim() ||
+          hotel.Description?.trim() ||
+          hotel.details?.trim() ||
+          null,
+        amenities: {
+          general: Array.isArray(hotel.amenities?.general)
+            ? hotel.amenities.general.map((a: string) => a.trim())
+            : Array.isArray(hotel.Facilities)
+            ? hotel.Facilities.map((a: string) => a.trim())
+            : Array.isArray(hotel.amenities)
+            ? hotel.amenities.map((a: string) => a.trim())
+            : [],
+          room: Array.isArray(hotel.amenities?.room)
+            ? hotel.amenities.room.map((a: string) => a.trim())
+            : [],
+        },
+        images: {
+          rooms: hotel.images?.rooms || [],
+          site: hotel.images?.site || [],
+          amenities: hotel.images?.amenities || [],
+        },
+        bookingConditions: hotel.booking_conditions
+          ? hotel.booking_conditions.map((bc: string) => bc.trim())
+          : [],
+      };
+
       if (!mergedHotels[hotelId]) {
-        mergedHotels[hotelId] = {
-          id: hotelId,
-          destinationId:
-            hotel.destination_id || hotel.DestinationId || hotel.destination,
-          name: hotel.name || hotel.Name || hotel.hotel_name,
-          location: {
-            lat: hotel.lat || hotel.Latitude || hotel.location?.lat || null,
-            lng: hotel.lng || hotel.Longitude || hotel.location?.lng || null,
-            address:
-              hotel.address || hotel.Address || hotel.location?.address || null,
-            city: hotel.City || hotel.location?.city || null,
-            country: hotel.Country || hotel.location?.country || null,
-            postalCode: hotel.PostalCode || null,
-          },
-          description:
-            hotel.description || hotel.Description || hotel.details || null,
-          amenities: {
-            general:
-              hotel.amenities?.general ||
-              hotel.Facilities ||
-              hotel.amenities ||
-              [],
-            room: hotel.amenities?.room || [],
-          },
-          images: {
-            rooms: hotel.images?.rooms || [],
-            site: hotel.images?.site || [],
-            amenities: hotel.images?.amenities || [],
-          },
-          bookingConditions: hotel.booking_conditions || [],
-        };
+        mergedHotels[hotelId] = trimmedHotel;
       } else {
         const existingHotel = mergedHotels[hotelId];
 
         // Merge descriptions, prefer longer or more detailed descriptions
         if (
-          hotel.description &&
+          trimmedHotel.description &&
           (!existingHotel.description ||
-            hotel.description.length > existingHotel.description.length)
+            trimmedHotel.description.length > existingHotel.description.length)
         ) {
-          existingHotel.description = hotel.description;
+          existingHotel.description = trimmedHotel.description;
         }
 
+        // Merge amenities, ensuring no duplicates and applying trimming
         existingHotel.amenities.general = Array.from(
           new Set([
             ...existingHotel.amenities.general.map(normalizeAmenity),
-            ...(Array.isArray(hotel.amenities)
-              ? hotel.amenities.map(normalizeAmenity)
-              : Array.isArray(hotel.amenities?.general)
-              ? hotel.amenities.general.map(normalizeAmenity)
-              : Array.isArray(hotel.Facilities)
-              ? hotel.Facilities.map(normalizeAmenity)
-              : []),
+            ...trimmedHotel.amenities.general.map(normalizeAmenity),
           ])
         );
 
         existingHotel.amenities.room = Array.from(
           new Set([
             ...existingHotel.amenities.room.map(normalizeAmenity),
-            ...(Array.isArray(hotel.amenities?.room)
-              ? hotel.amenities.room.map(normalizeAmenity)
-              : []),
+            ...trimmedHotel.amenities.room.map(normalizeAmenity),
           ])
         );
 
         // Merge images, removing duplicates based on link and description
         existingHotel.images.rooms = mergeImageArrays(
           existingHotel.images.rooms,
-          hotel.images?.rooms || []
+          trimmedHotel.images.rooms
         );
         existingHotel.images.site = mergeImageArrays(
           existingHotel.images.site,
-          hotel.images?.site || []
+          trimmedHotel.images.site
         );
         existingHotel.images.amenities = mergeImageArrays(
           existingHotel.images.amenities,
-          hotel.images?.amenities || []
+          trimmedHotel.images.amenities
         );
 
-        // Merge booking conditions, ensuring no duplicates
+        // Merge booking conditions, ensuring no duplicates and applying trimming
         existingHotel.bookingConditions = Array.from(
           new Set([
             ...existingHotel.bookingConditions,
-            ...(hotel.booking_conditions || []),
+            ...trimmedHotel.bookingConditions,
           ])
         );
 
         // Update missing location fields
         if (!existingHotel.location.lat) {
-          existingHotel.location.lat =
-            hotel.lat || hotel.Latitude || hotel.location?.lat || null;
+          existingHotel.location.lat = trimmedHotel.location.lat;
         }
         if (!existingHotel.location.lng) {
-          existingHotel.location.lng =
-            hotel.lng || hotel.Longitude || hotel.location?.lng || null;
+          existingHotel.location.lng = trimmedHotel.location.lng;
         }
         if (!existingHotel.location.address) {
-          existingHotel.location.address =
-            hotel.address || hotel.Address || hotel.location?.address || null;
+          existingHotel.location.address = trimmedHotel.location.address;
         }
         if (!existingHotel.location.city) {
-          existingHotel.location.city =
-            hotel.City || hotel.location?.city || null;
+          existingHotel.location.city = trimmedHotel.location.city;
         }
         if (!existingHotel.location.country) {
-          existingHotel.location.country =
-            hotel.Country || hotel.location?.country || null;
+          existingHotel.location.country = trimmedHotel.location.country;
         }
         if (!existingHotel.location.postalCode) {
-          existingHotel.location.postalCode = hotel.PostalCode || null;
+          existingHotel.location.postalCode = trimmedHotel.location.postalCode;
         }
       }
     });
