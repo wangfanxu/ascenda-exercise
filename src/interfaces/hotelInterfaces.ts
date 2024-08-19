@@ -16,9 +16,9 @@ export interface Hotel {
     room: string[];
   };
   images: {
-    rooms: { link: string; description: string }[];
-    site: { link: string; description: string }[];
-    amenities: { link: string; description: string }[];
+    rooms: { url?: string; link?: string; description: string }[];
+    site: { url?: string; link?: string; description: string }[];
+    amenities: { url?: string; link?: string; description: string }[];
   };
   bookingConditions: string[];
 }

@@ -58,28 +58,32 @@ export function mergeHotelData(sources: any[]): Hotel[] {
       } else {
         const existingHotel = mergedHotels[hotelId];
 
-        // Merge descriptions, prefer longer or more detailed descriptions
+        //merge name, prefer longer or more detailed name
+        if (
+          trimmedHotel.name &&
+          (!existingHotel.name ||
+            trimmedHotel.name.length > existingHotel.name.length)
+        ) {
+          existingHotel.name = trimmedHotel.name;
+        }
         if (
           trimmedHotel.description &&
           (!existingHotel.description ||
             trimmedHotel.description.length > existingHotel.description.length)
         ) {
+          // Merge descriptions, prefer longer or more detailed descriptions
           existingHotel.description = trimmedHotel.description;
         }
 
         // Merge amenities, ensuring no duplicates and applying trimming
-        existingHotel.amenities.general = Array.from(
-          new Set([
-            ...existingHotel.amenities.general.map(normalizeAmenity),
-            ...trimmedHotel.amenities.general.map(normalizeAmenity),
-          ])
+        existingHotel.amenities.general = mergeAmenities(
+          existingHotel.amenities.general,
+          trimmedHotel.amenities.general
         );
 
-        existingHotel.amenities.room = Array.from(
-          new Set([
-            ...existingHotel.amenities.room.map(normalizeAmenity),
-            ...trimmedHotel.amenities.room.map(normalizeAmenity),
-          ])
+        existingHotel.amenities.room = mergeAmenities(
+          existingHotel.amenities.room,
+          trimmedHotel.amenities.room
         );
 
         // Merge images, removing duplicates based on link and description
@@ -111,7 +115,12 @@ export function mergeHotelData(sources: any[]): Hotel[] {
         if (!existingHotel.location.lng) {
           existingHotel.location.lng = trimmedHotel.location.lng;
         }
-        if (!existingHotel.location.address) {
+        if (
+          !existingHotel.location.address ||
+          (trimmedHotel.location.address &&
+            trimmedHotel.location.address.length >
+              existingHotel.location.address.length)
+        ) {
           existingHotel.location.address = trimmedHotel.location.address;
         }
         if (!existingHotel.location.city) {
@@ -131,10 +140,24 @@ export function mergeHotelData(sources: any[]): Hotel[] {
 }
 
 function mergeImageArrays(
-  arr1: { link: string; description: string }[],
-  arr2: { link: string; description: string }[]
-): { link: string; description: string }[] {
-  const combined = [...arr1, ...arr2];
+  arr1: {
+    link?: string;
+    url?: string;
+    caption?: string;
+    description?: string;
+  }[],
+  arr2: {
+    link?: string;
+    url?: string;
+    caption?: string;
+    description?: string;
+  }[]
+) {
+  const combined = [...arr1, ...arr2].map((image) => ({
+    link: image.link || image.url,
+    description: image.description || image.caption || "",
+  }));
+
   const uniqueImages = combined.filter(
     (image, index, self) =>
       index ===
@@ -142,13 +165,30 @@ function mergeImageArrays(
         (t) => t.link === image.link && t.description === image.description
       )
   );
+
   return uniqueImages;
 }
 
-function normalizeAmenity(amenity: string): string {
-  return amenity
+function normalizeAmenity(amenity: string) {
+  const normalized = amenity
     .replace(/([a-z])([A-Z])/g, "$1 $2") // Add space between camelCase words
     .toLowerCase() // Convert to lowercase
-    .trim() // Remove any leading or trailing spaces
-    .replace(/[\s-]+/g, "-"); // Replace multiple spaces or hyphens with a single space
+    .trim(); // Remove any leading or trailing spaces
+  return {
+    original: amenity,
+    normalized,
+  };
+}
+
+function mergeAmenities(arr1: string[], arr2: string[]): string[] {
+  const normalizedMap = new Map<string, string>();
+
+  [...arr1, ...arr2].forEach((amenity) => {
+    const { original, normalized } = normalizeAmenity(amenity);
+    if (!normalizedMap.has(normalized)) {
+      normalizedMap.set(normalized, original);
+    }
+  });
+
+  return Array.from(normalizedMap.values());
 }
