@@ -20,7 +20,6 @@ export const getHotels = async (req: Request, res: Response): Promise<void> => {
     const hotels = await getMergedHotelData(Number(destinationId), ids);
     res.json(hotels);
   } catch (error) {
-    console.log(error);
     res.status(500).json({ message: "Error retrieving hotels", error });
   }
 };
