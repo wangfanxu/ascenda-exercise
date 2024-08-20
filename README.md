@@ -19,9 +19,9 @@ This project is a service for merging hotel data from multiple suppliers, cleani
     - [Running Integration Tests](#running-integration-tests)
     - [Running API tests](#running-api-tests)
 - [API Endpoints](#api-endpoints)
-  - [GET /hotels](#get-hotels)
+  - [GET /api/hotels](#get-apihotels)
     - [Query Parameters](#query-parameters)
-  - [GET /hotels/:id](#get-hotelsid)
+  - [GET /api/hotels/:id](#get-apihotelsid)
     - [URL Parameters](#url-parameters)
 
 ## Data Merge Strategy
@@ -77,7 +77,7 @@ This command will bring up the necessary Docker services (Redis) and execute onl
 execute #.http files inside the http folder
 
 # API Endpoints
-## GET /hotels
+## GET /api/hotels
 Fetches a list of hotels based on destinationId and/or hotelIds.
 
 ### Query Parameters
@@ -86,7 +86,7 @@ Fetches a list of hotels based on destinationId and/or hotelIds.
 - `page` (optional): Page number for pagination (default: 1).
 - `limit` (optional): Number of results per page (default: 10).
 
-## GET /hotels/:id
+## GET /api/hotels/:id
 Fetches details of a single hotel by its ID.
 
 ### URL Parameters
