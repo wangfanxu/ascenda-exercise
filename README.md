@@ -40,7 +40,7 @@ The service merges hotel data from three different suppliers. The merge strategy
 To bring up the application and its dependencies (including Redis), use Docker Compose:
 
 ```bash
-docker-compose up -d
+docker-compose up
 ```
 
 This will start the Node.js application and Redis in detached mode.
