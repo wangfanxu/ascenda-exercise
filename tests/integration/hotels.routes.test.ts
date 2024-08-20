@@ -36,7 +36,7 @@ describe("Hotel Routes", () => {
 
       expect(response.status).toBe(200);
       expect(response.body).toEqual(mockData);
-      expect(getMergedHotelData).toHaveBeenCalledWith(123, ["1", "2"]);
+      expect(getMergedHotelData).toHaveBeenCalledWith(123, ["1", "2"],1,10);
     });
 
     it("should return 500 if there is an error", async () => {

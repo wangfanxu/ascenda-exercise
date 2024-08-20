@@ -50,7 +50,7 @@ describe("Hotel Service", () => {
 
       const hotels = await getMergedHotelData(123, ["1"]);
 
-      expect(redisClient.get).toHaveBeenCalledWith("hotels:123:1");
+      expect(redisClient.get).toHaveBeenCalledWith("hotels:123:1:1:10");
       expect(axios.get).not.toHaveBeenCalled();
       expect(mergeHotelData).not.toHaveBeenCalled();
       expect(hotels).toEqual(mockCachedData);
@@ -71,7 +71,7 @@ describe("Hotel Service", () => {
 
       const hotels = await getMergedHotelData(123, ["1"]);
 
-      expect(redisClient.get).toHaveBeenCalledWith("hotels:123:1");
+      expect(redisClient.get).toHaveBeenCalledWith("hotels:123:1:1:10");
       expect(axios.get).toHaveBeenCalledTimes(SUPPLIER_URLS.length);
       expect(mergeHotelData).toHaveBeenCalledWith([
         mockResponse,
@@ -79,7 +79,7 @@ describe("Hotel Service", () => {
         mockResponse,
       ]);
       expect(redisClient.setEx).toHaveBeenCalledWith(
-        "hotels:123:1",
+        "hotels:123:1:1:10",
         3600,
         JSON.stringify([{ id: "1", destinationId: 123, name: "Hotel A" }])
       );
@@ -98,7 +98,7 @@ describe("Hotel Service", () => {
         new CustomError("All suppliers failed to provide data", 503)
       );
 
-      expect(redisClient.get).toHaveBeenCalledWith("hotels:123:1");
+      expect(redisClient.get).toHaveBeenCalledWith("hotels:123:1:1:10");
       expect(axios.get).toHaveBeenCalledTimes(SUPPLIER_URLS.length);
       expect(mergeHotelData).not.toHaveBeenCalled();
       expect(redisClient.setEx).not.toHaveBeenCalled();

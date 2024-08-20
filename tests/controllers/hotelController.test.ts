@@ -33,7 +33,12 @@ describe("Hotel Controller test suite", () => {
 
       await getHotels(req, res);
 
-      expect(getMergedHotelData).toHaveBeenCalledWith(123, ["1", "2", "3"]);
+      expect(getMergedHotelData).toHaveBeenCalledWith(
+        123,
+        ["1", "2", "3"],
+        1,
+        10
+      );
       expect(res.json).toHaveBeenCalledWith([{ id: 1 }, { id: 2 }]);
     });
 

@@ -60,7 +60,7 @@ describe("Hotel Service Integration Tests", () => {
     ];
     expect(hotels).toEqual(expected);
     // // Check if the data is cached
-    const cachedData = await redisClient.get("hotels:123:1");
+    const cachedData = await redisClient.get("hotels:123:1:1:10");
 
     expect(JSON.parse(cachedData!)).toEqual(expected);
   });
