@@ -82,8 +82,10 @@ execute #.http files inside the http folder
 Fetches a list of hotels based on destinationId and/or hotelIds.
 
 ### Query Parameters
-destinationId (optional): Filter hotels by destination ID.
-hotelIds (optional): Comma-separated list of hotel IDs to filter.
+- `destinationId` (optional): Filter hotels by destination ID.
+- `hotelIds` (optional): Comma-separated list of hotel IDs to filter.
+- `page` (optional): Page number for pagination (default: 1).
+- `limit` (optional): Number of results per page (default: 10).
 
 ## GET /hotels/:id
 Fetches details of a single hotel by its ID.

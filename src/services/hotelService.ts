@@ -12,9 +12,13 @@ export const SUPPLIER_URLS = [
 
 export async function getMergedHotelData(
   destinationId?: number,
-  hotelIds?: string[]
+  hotelIds?: string[],
+  page: number = 1,
+  limit: number = 10
 ): Promise<Hotel[]> {
-  const cacheKey = `hotels:${destinationId || ""}:${hotelIds?.join(",") || ""}`;
+  const cacheKey = `hotels:${destinationId || ""}:${
+    hotelIds?.join(",") || ""
+  }:${page}:${limit}`;
 
   // Check if data is in cache
   const cachedData = await redisClient.get(cacheKey);
@@ -53,8 +57,10 @@ export async function getMergedHotelData(
   if (hotelIds && hotelIds.length > 0) {
     filteredData = filteredData.filter((hotel) => hotelIds.includes(hotel.id));
   }
-  await redisClient.setEx(cacheKey, 3600, JSON.stringify(filteredData)); // TTL of 1 hour
-  return filteredData;
+  const startIndex = (page - 1) * limit;
+  const paginatedData = filteredData.slice(startIndex, startIndex + limit);
+  await redisClient.setEx(cacheKey, 3600, JSON.stringify(paginatedData)); // TTL of 1 hour
+  return paginatedData;
 }
 
 export const getMergedDataById = async (id: string): Promise<Hotel | null> => {

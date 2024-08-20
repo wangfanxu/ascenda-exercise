@@ -6,7 +6,8 @@ import {
 
 export const getHotels = async (req: Request, res: Response): Promise<void> => {
   try {
-    const { destinationId, hotelIds } = req.query;
+    //page and limit are used for pagination
+    const { destinationId, hotelIds, page = "1", limit = "10" } = req.query;
     let ids: string[] | undefined;
 
     if (typeof hotelIds === "string") {
@@ -16,8 +17,15 @@ export const getHotels = async (req: Request, res: Response): Promise<void> => {
     } else {
       ids = undefined;
     }
+    const pageNumber = parseInt(page as string, 10);
+    const limitNumber = parseInt(limit as string, 10);
 
-    const hotels = await getMergedHotelData(Number(destinationId), ids);
+    const hotels = await getMergedHotelData(
+      Number(destinationId),
+      ids,
+      pageNumber,
+      limitNumber
+    );
     res.json(hotels);
   } catch (error) {
     res.status(500).json({ message: "Error retrieving hotels", error });
