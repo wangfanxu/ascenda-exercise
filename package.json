@@ -10,7 +10,8 @@
     "test": "jest --testPathIgnorePatterns=\"/tests/integration/\"",
     "test:integration": "npm run docker:up && jest --runInBand --testPathPattern=tests/integration && npm run docker:down",
     "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down"
+    "docker:down": "docker-compose down",
+    "coverage": "npm run docker:up && jest --runInBand --coverage && npm run docker:down"
   },
   "keywords": [],
   "author": "",
