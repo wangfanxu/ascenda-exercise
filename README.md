@@ -33,9 +33,8 @@ The service merges hotel data from three different suppliers. The merge strategy
 3. **Normalize and Merge Data**: The data from each supplier is normalized into a standard format. Amenities and images are deduplicated, and preference is given to longer or more detailed descriptions when merging.
 4. **Caching**: The merged data is cached in Redis with a Time-To-Live (TTL) to reduce the load on the supplier APIs for repeated requests.
 5. **Filtering**: The service allows filtering of the data by `destinationId` and specific `hotelIds`.
-
+6. **Pagination**: The service supports pagination by allowing clients to specify a page number and a limit for the number of hotels returned. This ensures that only a subset of the results is returned at a time, which is useful for managing large datasets and improving response times.
 ## Setup
-
 ### Bringing Up Docker Compose
 
 To bring up the application and its dependencies (including Redis), use Docker Compose:
