@@ -14,6 +14,7 @@ This project is a service for merging hotel data from multiple suppliers, cleani
     - [Bringing Up Docker Compose](#bringing-up-docker-compose)
     - [Stopping Docker Compose](#stopping-docker-compose)
   - [Testing](#testing)
+    - [Installing Dependencies](#installing-dependencies)
     - [Running Unit Tests](#running-unit-tests)
     - [Running Integration Tests](#running-integration-tests)
     - [Running API tests](#running-api-tests)
@@ -52,6 +53,12 @@ docker-compose down
 ```
 
 ## Testing
+### Installing Dependencies
+Before running the tests, make sure all dependencies are installed:
+```
+npm install
+```
+
 ### Running Unit Tests
 Unit tests are designed to test individual components of the application in isolation. To run unit tests, use:
 
