@@ -54,7 +54,6 @@ export async function getMergedHotelData(
     filteredData = filteredData.filter((hotel) => hotelIds.includes(hotel.id));
   }
   await redisClient.setEx(cacheKey, 3600, JSON.stringify(filteredData)); // TTL of 1 hour
-
   return filteredData;
 }
 

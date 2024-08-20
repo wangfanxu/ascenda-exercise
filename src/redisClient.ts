@@ -13,4 +13,10 @@ redisClient.on("error", (err) => {
 
 redisClient.connect();
 
+export async function connectRedis() {
+  if (!redisClient.isOpen) {
+    await redisClient.connect();
+  }
+}
+
 export default redisClient;
